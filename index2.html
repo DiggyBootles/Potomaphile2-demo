@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>CreekFreak — Built by and for.</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #071B23;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif;
+  }
+  body {
+    padding: 24px 12px;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    width: 100%;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  #potomaphile-root {
+    /* Deep Current palette */
+    --shell: #0D2733;        /* app shell / dark chrome */
+    --shell-2: #123240;      /* header / nav / raised dark surfaces */
+    --shell-deep: #081C24;   /* deepest — map background */
+    --sheet: #FFFFFF;        /* white content sheet (lists/detail) */
+    --ink: #16323C;          /* dark text on white */
+    --ink-soft: #62808A;     /* muted dark text on white */
+    --ink-light: #EAF6F9;    /* light text on dark */
+    --ink-light-soft: rgba(234,246,249,0.62); /* muted light text on dark */
+    --cyan: #74D8EE;         /* primary accent */
+    --cyan-deep: #2E93B0;    /* pins / icons / mid accent */
+    --lime: #CADD4C;         /* active nav / highlight */
+    --teal-card: #17495A;    /* icon-square backgrounds */
+    --line: rgba(255,255,255,0.14);   /* borders on dark */
+    --line-light: #E7ECEA;   /* borders on white sheet */
+    --danger: #FF8A73;
+    --moss: #4F9B63;
+    --clay: #FF8A5B;
+    font-family: 'Inter', sans-serif;
+    color: var(--ink-light);
+    background: var(--shell);
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+    border-radius: 22px;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 20px 60px rgba(0,0,0,0.4);
+  }
+  #potomaphile-root * { box-sizing: border-box; }
+  #potomaphile-root h1, #potomaphile-root h2, #potomaphile-root h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    margin: 0;
+    color: var(--ink);
+    font-weight: 700;
+  }
+  #potomaphile-root .mono { font-family: 'IBM Plex Mono', monospace; }
+  #potomaphile-root button { font-family: 'Inter', sans-serif; cursor: pointer; }
+
+  .pm-header {
+    padding: 18px 20px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: relative; z-index: 3; background: var(--shell-2);
+  }
+  .pm-wordmark { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 22px; letter-spacing: -0.2px; color: var(--ink-light); }
+  .pm-wordmark span { color: var(--cyan); }
+  .pm-tagline { font-size: 10px; color: var(--ink-light-soft); font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: 0.12em; margin-top: 2px; }
+  .pm-menu-btn {
+    width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line); background: rgba(255,255,255,0.04);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .pm-menu-btn svg { width: 16px; height: 16px; }
+
+  .about-overlay {
+    position: absolute; inset: 0; z-index: 20; background: rgba(8,28,36,0.72); backdrop-filter: blur(3px);
+    display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  }
+  .about-overlay.open { opacity: 1; pointer-events: auto; }
+  .about-panel {
+    width: 100%; background: var(--shell-2); border-radius: 20px 20px 0 0; padding: 28px 24px 34px;
+    box-sizing: border-box; position: relative; transform: translateY(16px); transition: transform 0.2s;
+  }
+  .about-overlay.open .about-panel { transform: translateY(0); }
+  .about-close { position: absolute; top: 18px; right: 18px; width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--line); background: rgba(255,255,255,0.04); color: var(--ink-light); display: flex; align-items: center; justify-content: center; }
+  .about-wordmark { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 26px; color: var(--ink-light); margin-top: 6px; }
+  .about-wordmark span { color: var(--cyan); }
+  .about-tagline { font-size: 12px; color: var(--ink-light-soft); font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px; margin-bottom: 20px; }
+  .about-body { font-size: 14px; line-height: 1.6; color: var(--ink-light); margin: 0 0 14px; }
+  .about-body-secondary { color: var(--ink-light-soft); font-size: 13px; }
+
+  .pm-body { position: relative; z-index: 2; width: 100%; height: auto; max-height: 640px; overflow-y: auto; overflow-x: hidden; background: var(--sheet); border-radius: 20px 20px 0 0; box-sizing: border-box; }
+  .pm-body.map-mode { background: var(--shell-deep); border-radius: 0; }
+  .pm-view { display: none; padding: 16px 20px 90px; color: var(--ink); width: 100%; box-sizing: border-box; overflow-x: hidden; }
+  .pm-view.active { display: block; }
+  .pm-body.map-mode .pm-view { padding: 12px 14px 90px; color: var(--ink-light); }
+
+  /* ACTIVITY CHIP ROW (dark chrome, sits above the white sheet on Discover) */
+  .activity-row { display: flex; gap: 8px; overflow-x: auto; padding: 4px 20px 16px; background: var(--shell-2); position: relative; z-index: 3; }
+  .activity-chip {
+    flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 5px;
+    background: none; border: none; padding: 0; width: 52px;
+  }
+  .activity-chip .ico {
+    width: 42px; height: 42px; border-radius: 50%; background: rgba(176,128,216,0.12); border: 1px solid rgba(176,128,216,0.3);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .activity-chip.on .ico { background: rgba(176,128,216,0.28); border-color: #B080D8; box-shadow: 0 0 0 3px rgba(176,128,216,0.16); }
+  .activity-chip .lbl { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-light-soft); font-family: 'IBM Plex Mono', monospace; }
+  .activity-chip.on .lbl { color: var(--ink-light); }
+  .night-icon { display: block; }
+
+  /* MAP */
+  .map-wrap { position: relative; aspect-ratio: 1.562 / 1; border-radius: 14px; overflow: hidden; margin-bottom: 10px; background: radial-gradient(ellipse at 50% 30%, #123544 0%, #081C24 75%); touch-action: none; }
+  .map-canvas { position: absolute; inset: 0; transform-origin: center center; will-change: transform; cursor: grab; }
+  .map-canvas:active { cursor: grabbing; }
+  .zoom-controls {
+    position: absolute; right: 10px; bottom: 10px; z-index: 3;
+    background: rgba(8,28,36,0.82); border: 1px solid var(--line); border-radius: 12px; backdrop-filter: blur(4px);
+    display: flex; flex-direction: column; align-items: center; overflow: hidden;
+  }
+  .zoom-controls button { width: 30px; height: 30px; background: none; border: none; color: var(--ink-light); font-size: 16px; font-weight: 700; }
+  .zoom-controls button:active { background: rgba(255,255,255,0.08); }
+  .zoom-level { font-size: 8px; color: var(--ink-light-soft); font-family: 'IBM Plex Mono', monospace; padding: 1px 0 3px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); width: 100%; text-align: center; }
+  .topo-lines { position: absolute; inset: 0; opacity: 0.35; pointer-events: none;
+    background-image: repeating-radial-gradient(circle at 30% 25%, transparent 0, transparent 9px, rgba(116,216,238,0.16) 10px, transparent 11px),
+                       repeating-radial-gradient(circle at 75% 70%, transparent 0, transparent 13px, rgba(116,216,238,0.12) 14px, transparent 15px); }
+  .md-outline { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .md-outline path { fill: #123544; stroke: #4FB8D4; stroke-width: 0.28; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+  .map-caption { font-size: 10px; color: var(--ink-light-soft); text-align: center; margin-bottom: 12px; font-family: 'IBM Plex Mono', monospace; }
+  .map-search-btn {
+    position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+    background: rgba(8,28,36,0.82); border: 1px solid var(--line); border-radius: 24px; backdrop-filter: blur(4px);
+    padding: 9px 16px; font-size: 12.5px; font-weight: 600; color: var(--ink-light);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 6px; z-index: 2;
+  }
+  .pin {
+    position: absolute; width: 28px; height: 28px; margin-left: -14px; margin-top: -28px;
+    cursor: pointer; transform-origin: 50% 100%; z-index: 1;
+  }
+  .pin svg { width: 100%; height: 100%; filter: drop-shadow(0 3px 5px rgba(0,0,0,0.45)); transition: transform 0.15s; transform-origin: 50% 100%; }
+  .pin:hover svg, .pin.selected svg { transform: scale(1.15); }
+  .you-are-here { position: absolute; width: 16px; height: 16px; border-radius: 50%; background: var(--cyan); border: 3px solid var(--shell-deep); margin-left: -11px; margin-top: -11px; box-shadow: 0 0 0 6px rgba(116,216,238,0.25); z-index: 1; animation: pulse-glow 2.2s ease-in-out infinite; }
+  @keyframes pulse-glow { 0%,100% { box-shadow: 0 0 0 6px rgba(116,216,238,0.25); } 50% { box-shadow: 0 0 0 10px rgba(116,216,238,0.12); } }
+
+  .map-preview {
+    border: 1px solid var(--line); background: rgba(18,50,64,0.92); backdrop-filter: blur(6px); border-radius: 14px; padding: 14px; margin-bottom: 6px; color: var(--ink-light);
+  }
+  .mp-row { display: flex; justify-content: space-between; align-items: flex-start; min-width: 0; }
+  .mp-title { font-size: 17px; color: var(--ink-light); overflow-wrap: break-word; }
+  .mp-sub { font-size: 12px; color: var(--ink-light-soft); margin-top: 1px; }
+  .chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .chip {
+    font-size: 11px; padding: 4px 9px; border-radius: 20px; font-weight: 600;
+    background: rgba(202,221,76,0.16); color: #D8E86E; border: 1px solid rgba(202,221,76,0.3);
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .pm-body.map-mode .chip { background: rgba(202,221,76,0.18); color: #E0EE85; border-color: rgba(202,221,76,0.35); }
+  .chip.also { background: rgba(116,216,238,0.12); color: var(--cyan); border-color: rgba(116,216,238,0.28); }
+  .chip.skip { background: rgba(255,138,115,0.14); color: var(--danger); border-color: rgba(255,138,115,0.3); }
+  .chip.cold { background: rgba(116,180,238,0.14); color: #9FD3F5; border-color: rgba(116,180,238,0.3); }
+  .pm-view:not(.pm-body.map-mode *) .card-block .chip.also,
+  .card-block .chip.also { background: rgba(46,147,176,0.12); color: var(--cyan-deep); border-color: rgba(46,147,176,0.28); }
+  .card-block .chip { background: rgba(79,155,99,0.14); color: #2F7A44; border-color: rgba(79,155,99,0.3); }
+  .card-block .chip.skip { background: rgba(255,138,115,0.14); color: #D65A3F; border-color: rgba(255,138,115,0.32); }
+  .card-block .chip.cold { background: rgba(46,147,176,0.12); color: #1F7C99; border-color: rgba(46,147,176,0.28); }
+  .view-spot-btn {
+    width: 100%; margin-top: 12px; background: var(--lime); color: var(--shell-2);
+    border: none; border-radius: 10px; padding: 11px 0; font-size: 13px; font-weight: 700; letter-spacing: 0.02em;
+  }
+
+  /* FILTERS (used within white sheet — Discover secondary filters) */
+  .filter-scroll { display: flex; gap: 7px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 4px; }
+  .filter-pill {
+    flex-shrink: 0; font-size: 12px; padding: 7px 12px; border-radius: 20px; border: 1px solid var(--line-light);
+    background: #F4F7F6; font-weight: 600; color: var(--ink-soft); white-space: nowrap;
+  }
+  .filter-pill.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+  /* DISCOVER LIST */
+  .section-eyebrow { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--cyan-deep); margin: 18px 0 10px; font-weight: 600; }
+  .prototype-tag { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--line-light); }
+  .prototype-badge { font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-soft); background: #F0F3F2; border: 1px solid var(--line-light); border-radius: 5px; padding: 2px 6px; }
+  .prototype-note { font-size: 10.5px; color: var(--ink-soft); }
+  .section-eyebrow:first-child { margin-top: 4px; }
+  .spot-card {
+    border: 1px solid var(--line-light); background: #FCFDFC; border-radius: 14px; padding: 13px 14px; margin-bottom: 10px;
+    display: flex; gap: 12px; align-items: center; box-shadow: 0 1px 2px rgba(20,50,60,0.04);
+  }
+  .spot-thumb {
+    width: 52px; height: 52px; border-radius: 12px; flex-shrink: 0; background: var(--teal-card);
+    display: flex; align-items: center; justify-content: center; font-size: 20px;
+    box-shadow: inset 0 -2px 4px rgba(0,0,0,0.15);
+  }
+  .spot-info { flex: 1; min-width: 0; }
+  .spot-dist { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--ink-soft); }
+  .spot-name { font-size: 15.5px; font-weight: 700; font-family: 'Space Grotesk', sans-serif; color: var(--ink); }
+  .spot-best { font-size: 11.5px; color: var(--ink-soft); font-weight: 500; margin-top: 2px; }
+  .fav-heart { flex-shrink: 0; font-size: 18px; background: none; border: none; color: var(--cyan-deep); opacity: 0.55; }
+  .fav-heart.on { color: var(--clay); opacity: 1; }
+
+  /* SPOT DETAIL */
+  .detail-back { font-size: 12px; color: var(--cyan-deep); font-weight: 700; background: none; border: none; padding: 0; margin-bottom: 10px; }
+  .detail-hero { border-radius: 14px; height: 130px; margin-bottom: 12px; display:flex; align-items:center; justify-content:center; font-size:34px; background: var(--teal-card); }
+  .detail-name { font-size: 24px; }
+  .detail-water { font-size: 13px; color: var(--ink-soft); margin-top: 2px; }
+  .detail-fav-row { display: flex; gap: 8px; margin: 12px 0; }
+  .detail-btn { flex: 1; border: 1px solid var(--line-light); background: #F4F7F6; border-radius: 10px; padding: 9px 0; font-size: 12.5px; font-weight: 700; color: var(--ink); }
+  .detail-btn.on { background: var(--clay); color: #fff; border-color: var(--clay); }
+
+  .card-block { border: 1px solid var(--line-light); background: #FCFDFC; border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+  .card-block h3 { font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.06em; font-family: 'IBM Plex Mono', monospace; color: var(--ink-soft); margin-bottom: 10px; font-weight: 600;}
+
+  .good-for-group { margin-bottom: 10px; }
+  .good-for-label { font-size: 11px; font-weight: 700; margin-bottom: 5px; }
+  .good-for-label.great { color: var(--moss); }
+  .good-for-label.ok { color: var(--cyan-deep); }
+  .good-for-label.skip { color: var(--danger); }
+
+  .gauge-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .gauge-item { text-align: center; flex: 1; }
+  .gauge-bar-bg { width: 8px; height: 46px; background: #E7ECEA; border-radius: 6px; margin: 0 auto 6px; position: relative; overflow: hidden; }
+  .gauge-bar-fill { position: absolute; bottom: 0; left: 0; right: 0; background: var(--cyan-deep); border-radius: 6px; }
+  .gauge-label { font-size: 10px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.04em; }
+  .gauge-value { font-size: 11px; font-weight: 700; margin-top: 2px; color: var(--ink); }
+
+  .info-row { display: flex; justify-content: space-between; font-size: 12.5px; padding: 6px 0; border-bottom: 1px solid #EDF1F0; }
+  .info-row:last-child { border-bottom: none; }
+  .info-row .label { color: var(--ink-soft); }
+  .info-row .value { font-weight: 600; text-align: right; }
+
+  .wq-note { font-size: 11.5px; color: var(--ink-soft); font-style: italic; padding: 8px; background: #F4F7F6; border-radius: 8px; }
+  .wq-good { font-size: 12px; color: var(--moss); font-weight: 700; }
+  .history-text { font-size: 13px; line-height: 1.55; color: var(--ink); }
+  .org-card { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #EDF1F0; }
+  .org-card:last-child { border-bottom: none; }
+  .org-card-icon { width: 36px; height: 36px; border-radius: 10px; background: rgba(44,169,201,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .org-card-name { font-size: 13px; font-weight: 700; color: var(--ink); font-family: 'Space Grotesk', sans-serif; }
+  .org-card-desc { font-size: 11.5px; color: var(--ink-soft); margin-top: 1px; }
+  .protect-callout { background: rgba(44,169,201,0.06); border: 1px solid rgba(44,169,201,0.22); border-radius: 14px; padding: 14px; margin-bottom: 14px; }
+  .protect-callout-title { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; font-family: 'Space Grotesk', sans-serif; color: var(--ink); margin-bottom: 6px; }
+  .protect-callout-text { font-size: 12.5px; line-height: 1.55; color: var(--ink-soft); margin: 0; }
+
+  .report-item { padding: 10px 0; border-bottom: 1px solid #EDF1F0; }
+  .report-item:last-child { border-bottom: none; }
+  .report-meta { font-size: 10.5px; color: var(--ink-soft); font-family: 'IBM Plex Mono', monospace; margin-bottom: 3px; }
+  .report-text { font-size: 13px; }
+  .add-report-btn { width: 100%; background: var(--shell-2); color: #fff; border: none; border-radius: 10px; padding: 10px 0; font-size: 13px; font-weight: 700; }
+
+  .empty-fav { text-align: center; padding: 60px 20px; color: var(--ink-soft); font-size: 13px; }
+
+  .pm-nav-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0; background: var(--shell-2);
+    border-top: 1px solid var(--line); display: flex; z-index: 4;
+  }
+  .nav-btn { flex: 1; padding: 10px 0 12px; text-align: center; background: none; border: none; font-size: 9.5px; font-weight: 700; color: var(--ink-light-soft); font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: 0.03em; }
+  .nav-btn.active { color: var(--lime); }
+  .nav-btn .icon { font-size: 18px; display: block; margin-bottom: 3px; }
+
+</style>
+</head>
+<body>
+<div id="potomaphile-root">
+  <div class="pm-header">
+    <div>
+      <div class="pm-wordmark"><span>Creek</span>Freak</div>
+      <div class="pm-tagline">Built by and for.</div>
+    </div>
+    <button class="pm-menu-btn" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#74D8EE" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+    </button>
+  </div>
+
+  <div id="activity-bar"></div>
+  <div class="pm-body" id="pm-body"></div>
+
+  <div class="pm-nav-bottom">
+    <button class="nav-btn active" data-nav="map"><span class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg></span>Map</button>
+    <button class="nav-btn" data-nav="discover"><span class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></span>Spots</button>
+    <button class="nav-btn" data-nav="favorites"><span class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></span>Saved</button>
+    <button class="nav-btn" data-nav="add"><span class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>Add Spot</button>
+  </div>
+
+  <div class="about-overlay" id="about-overlay">
+    <div class="about-panel">
+      <button class="about-close" id="about-close" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
+      </button>
+      <div class="about-wordmark"><span>Creek</span>Freak</div>
+      <div class="about-tagline">Built by and for.</div>
+      <p class="about-body">Find places to get into, onto, and alongside fresh running water — and connect people who enjoy creeks with the groups protecting them.</p>
+      <p class="about-body about-body-secondary">CreekFreak is being built to make local waterways easier to discover, understand, enjoy, and protect.</p>
+    </div>
+  </div>
+</div>
+
+
+<script>
+(function() {
+  const root = document.getElementById('potomaphile-root');
+  const body = document.getElementById('pm-body');
+
+  const ICON_COLOR = '#2CA9C9';
+  const ICONS = {
+    chill:      `<path d="M6 8 3.3 13h5.4L6 8Z" fill="${ICON_COLOR}"/><path d="M6 4.5 3.8 9.2h4.4L6 4.5Z" fill="${ICON_COLOR}"/><rect x="5.4" y="13" width="1.2" height="3.5" fill="${ICON_COLOR}"/><line x1="11.5" y1="10.5" x2="21" y2="10.5" stroke="${ICON_COLOR}" stroke-width="1.5" stroke-linecap="round"/><line x1="12.3" y1="10.5" x2="10.5" y2="17" stroke="${ICON_COLOR}" stroke-width="1.3" stroke-linecap="round"/><line x1="20.2" y1="10.5" x2="22" y2="17" stroke="${ICON_COLOR}" stroke-width="1.3" stroke-linecap="round"/><line x1="10.9" y1="13.8" x2="21.6" y2="13.8" stroke="${ICON_COLOR}" stroke-width="1.1" opacity="0.65" stroke-linecap="round"/>`,
+    wade:       `<path d="M2 9.5c1.6 0 1.6 2 3.2 2s1.6-2 3.2-2 1.6 2 3.2 2 1.6-2 3.2-2 1.6 2 3.2 2 1.6-2 3.2-2" fill="none" stroke="${ICON_COLOR}" stroke-width="1.8" stroke-linecap="round"/><path d="M2 14.5c1.6 0 1.6 2 3.2 2s1.6-2 3.2-2 1.6 2 3.2 2 1.6-2 3.2-2 1.6 2 3.2 2 1.6-2 3.2-2" fill="none" stroke="${ICON_COLOR}" stroke-width="1.8" stroke-linecap="round" opacity="0.55"/>`,
+    swim:       `<circle cx="16" cy="5" r="1.8" fill="${ICON_COLOR}"/><path d="M14.5 7.5 11 9.5" stroke="${ICON_COLOR}" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M14.5 7.5 17.5 10.5" stroke="${ICON_COLOR}" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M17.5 10.5 21 9" stroke="${ICON_COLOR}" stroke-width="1.6" stroke-linecap="round" fill="none"/><path d="M2 17.5c1.6 0 1.6 2 3.2 2s1.6-2 3.2-2 1.6 2 3.2 2 1.6-2 3.2-2 1.6 2 3.2 2 1.6-2 3.2-2" fill="none" stroke="${ICON_COLOR}" stroke-width="1.8" stroke-linecap="round"/>`,
+    tube:       `<path fill-rule="evenodd" d="M12 2.8a9.2 9.2 0 1 0 0 18.4 9.2 9.2 0 0 0 0-18.4Zm0 4.4a4.8 4.8 0 1 1 0 9.6 4.8 4.8 0 0 1 0-9.6Z" fill="${ICON_COLOR}"/><path d="M20.3 3.2l.55 1.3 1.3.55-1.3.55-.55 1.3-.55-1.3-1.3-.55 1.3-.55z" fill="${ICON_COLOR}"/><path d="M2.8 17.5l.45 1.05 1.05.45-1.05.45-.45 1.05-.45-1.05-1.05-.45 1.05-.45z" fill="${ICON_COLOR}"/>`,
+    fish:       `<ellipse cx="10" cy="12" rx="7.5" ry="4.3" fill="${ICON_COLOR}"/><path d="M17 12 22 8v8l-5-4Z" fill="${ICON_COLOR}"/><circle cx="5.6" cy="11" r="1" fill="#1B1030"/>`,
+    fly_fish:   `<path d="M4 21 12 9" fill="none" stroke="${ICON_COLOR}" stroke-width="1.9" stroke-linecap="round"/><path d="M12 9c3.8 0 6.5 2.3 6.5 5.5S15.8 20 12.5 19" fill="none" stroke="${ICON_COLOR}" stroke-width="1.6" stroke-linecap="round"/><path d="M12.5 19c-1.8.3-3-.5-3.2-1.8" fill="none" stroke="#1B1030" stroke-width="1.2" opacity="0.4" stroke-linecap="round"/><circle cx="12.7" cy="18.8" r="1.3" fill="${ICON_COLOR}"/>`,
+    kayak:      `<line x1="9" y1="2.5" x2="15" y2="2.5" stroke="${ICON_COLOR}" stroke-width="1.8" stroke-linecap="round"/><line x1="12" y1="2.5" x2="12" y2="14" stroke="${ICON_COLOR}" stroke-width="1.8" stroke-linecap="round"/><path d="M12 13c3 0 4.5 2 4.5 4.5S15 22 12 22 7.5 20 7.5 17.5 9 13 12 13Z" fill="${ICON_COLOR}"/>`,
+    packraft:   `<path d="M2.5 13.5c1.5 3.2 5.2 5 9.5 5s8-1.8 9.5-5" fill="none" stroke="${ICON_COLOR}" stroke-width="1.9" stroke-linecap="round"/><path d="M6 13.5V9a6 6 0 0 1 12 0v4.5" fill="none" stroke="${ICON_COLOR}" stroke-width="1.9" stroke-linecap="round"/>`,
+    camp:       `<path d="M12 3 3.5 20h17L12 3Z" fill="${ICON_COLOR}"/><path d="M12 3l2.6 17" stroke="#1B1030" stroke-width="1.3" opacity="0.35"/><path d="M18.6 3.5l.5 1.3 1.3.5-1.3.5-.5 1.3-.5-1.3-1.3-.5 1.3-.5z" fill="${ICON_COLOR}"/>`,
+    hike:       `<path d="m8 4 4 8.5 4.5-5L21 19H3L8 4Z" fill="${ICON_COLOR}"/>`,
+    creek_walk: `<path d="M2 12c1.8-3.4 3.6 3.4 5.4 0S11 8.6 12.8 12s3.6 3.4 5.4 0 3.6-3.4 5.4 0" fill="none" stroke="${ICON_COLOR}" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="0.2 3.4"/><circle cx="6" cy="18" r="1.5" fill="${ICON_COLOR}"/><circle cx="12" cy="19.5" r="1.5" fill="${ICON_COLOR}" opacity="0.6"/><circle cx="18" cy="18" r="1.5" fill="${ICON_COLOR}"/>`,
+    kids:       `<circle cx="12" cy="7" r="3.2" fill="${ICON_COLOR}"/><path d="M5.5 21v-2.2a6.5 6.5 0 0 1 13 0V21" fill="none" stroke="${ICON_COLOR}" stroke-width="1.9" stroke-linecap="round"/>`,
+    dog:        `<circle cx="10" cy="4.5" r="1.9" fill="${ICON_COLOR}"/><circle cx="16.5" cy="7.5" r="1.9" fill="${ICON_COLOR}"/><circle cx="18.5" cy="14.5" r="1.9" fill="${ICON_COLOR}"/><path d="M8.2 10.2a4.6 4.6 0 0 1 4.6 4.6v3.2a3.2 3.2 0 0 1-6.28.96Q5.5 16.7 3.9 16.1a3.2 3.2 0 0 1 .95-5.97Z" fill="${ICON_COLOR}"/>`,
+    photo:      `<path d="M13.6 4.5H9.7L7.4 7H4.2a1.9 1.9 0 0 0-1.9 1.9v8.2A1.9 1.9 0 0 0 4.2 19h15.6a1.9 1.9 0 0 0 1.9-1.9V8.9A1.9 1.9 0 0 0 19.8 7h-2.8Z" fill="${ICON_COLOR}"/><circle cx="12" cy="12.6" r="3" fill="#1B1030"/>`,
+    cold_plunge:`<path d="M2 15.5c1.8-3.2 3.6 3.2 5.4 0S11 12.3 12.8 15.5s3.6 3.2 5.4 0" fill="none" stroke="${ICON_COLOR}" stroke-width="2.1" stroke-linecap="round"/><g stroke="${ICON_COLOR}" stroke-width="1.4" stroke-linecap="round"><line x1="12" y1="1.8" x2="12" y2="9.8"/><line x1="8.1" y1="3.5" x2="15.9" y2="8.1"/><line x1="15.9" y1="3.5" x2="8.1" y2="8.1"/><line x1="12" y1="4" x2="10.6" y2="5"/><line x1="12" y1="4" x2="13.4" y2="5"/><line x1="12" y1="7.6" x2="10.6" y2="6.6"/><line x1="12" y1="7.6" x2="13.4" y2="6.6"/><line x1="9.4" y1="4.3" x2="8.7" y2="5.7"/><line x1="9.4" y1="4.3" x2="10.5" y2="3.5"/><line x1="14.6" y1="7.3" x2="15.3" y2="5.9"/><line x1="14.6" y1="7.3" x2="13.5" y2="8.1"/></g>`,
+    trail:      `<path d="M4 20c2-1 3-3 3-5.5 0-2 1-3 3-3s3 1.5 3 3.5c0 2.3-1.2 4-3.2 5" fill="none" stroke="${ICON_COLOR}" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="0.1 3"/><circle cx="7" cy="6" r="2" fill="${ICON_COLOR}"/><path d="M12.5 12 17 6" stroke="${ICON_COLOR}" stroke-width="1.8" stroke-linecap="round"/>`,
+    parking:    `<rect x="4" y="3" width="16" height="18" rx="2.5" fill="none" stroke="${ICON_COLOR}" stroke-width="1.7"/><path d="M9.5 17V7h3.4a3 3 0 0 1 0 6H9.5" fill="none" stroke="${ICON_COLOR}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>`,
+    water_access:`<path d="M12 2c2.4 3 4.5 6 4.5 9.3a4.5 4.5 0 1 1-9 0C7.5 8 9.6 5 12 2Z" fill="${ICON_COLOR}"/><path d="M3 20c1.6 0 1.6 1.6 3.2 1.6S7.8 20 9.4 20s1.6 1.6 3.2 1.6S14.2 20 15.8 20s1.6 1.6 3.2 1.6S20.6 20 22 20" fill="none" stroke="${ICON_COLOR}" stroke-width="1.6" stroke-linecap="round" opacity="0.7"/>`
+  };
+  function iconSvg(key, size){
+    size = size || 18;
+    const inner = ICONS[key];
+    if(!inner) return '';
+    return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" class="night-icon">${inner}</svg>`;
+  }
+
+  const ACTIVITY_META = {
+    chill: {label:'Chill'}, wade:{label:'Wading'}, swim:{label:'Swimming'},
+    tube:{label:'Tubing'}, fish:{label:'Fishing'}, fly_fish:{label:'Fly Fishing'},
+    kayak:{label:'Kayaking'}, packraft:{label:'Packrafting'}, camp:{label:'Camping'},
+    hike:{label:'Hiking'}, creek_walk:{label:'Creek Walking'}, kids:{label:'Kid Friendly'},
+    dog:{label:'Dog Friendly'}, photo:{label:'Photography'}, cold_plunge:{label:'Cold Plunge'}
+  };
+
+  const WATERWAY_INFO = {
+    gunpowder: {
+      history: "Local legend holds that Big Gunpowder Falls got its name from early colonists who supposedly gave gunpowder to Native Americans, who tried planting it like seed along the banks. The river begins in southern Pennsylvania and runs about 57 miles before joining the Little Gunpowder Falls to form the tidal Gunpowder River, which empties into the Chesapeake Bay. The valley was once heavily industrial \u2014 the Gunpowder Copper Works near Glen Arm operated from around 1811 to 1858, rolling copper sheathing for ships until a flood destroyed its dam. Gunpowder Falls State Park was created in 1959 to protect the Big and Little Gunpowder valleys.",
+      conservation: "The Gunpowder Valley Conservancy has spent more than three decades on land preservation, reforestation, and stream cleanups across the watershed, helping protect around 1,600 acres from development. Because the river below Prettyboy Dam feeds the reservoirs supplying drinking water to over 600,000 Baltimore-area residents, much of its work focuses on reducing stormwater runoff and nutrient pollution through rain gardens, tree plantings, and volunteer stream cleanups.",
+      orgs: [{name:"Gunpowder Valley Conservancy", desc:"Watershed conservation & restoration"}]
+    },
+    little_gunpowder: {
+      history: "The Little Gunpowder Falls forms much of the boundary between Baltimore and Harford counties before joining the Big Gunpowder to create the Gunpowder River. Jerusalem Mill, on its banks, dates to 1772, when Quaker millwright Isaiah Linton and miller David Lee built a gristmill on the site; flour milled here under the White Silk label was shipped as far as the Caribbean, and it became one of the largest mills in Maryland.",
+      conservation: "The Gunpowder Valley Conservancy stewards this stretch alongside county watershed-restoration plans aimed at stormwater retrofits and stream repair. Much of the Little Gunpowder is classified as high-quality Tier II water \u2014 cold and clean enough to support trout year-round, one of relatively few streams left in the region that can.",
+      orgs: [{name:"Gunpowder Valley Conservancy", desc:"Watershed conservation & restoration"}]
+    },
+    long_green: {
+      history: "Long Green Creek winds through the rural Long Green Valley in Baltimore County before joining the Big Gunpowder system inside Gunpowder Falls State Park. The swimming hole known locally as the Pool carries no official signage \u2014 it's simply a well-known, word-of-mouth spot passed along by regulars.",
+      conservation: "As part of the greater Gunpowder watershed, the creek benefits from the reforestation and cleanup work led by the Gunpowder Valley Conservancy, while the Long Green Land Trust works separately to preserve the surrounding valley's farms and open space from development.",
+      orgs: [{name:"Gunpowder Valley Conservancy", desc:"Watershed conservation & restoration"}, {name:"Long Green Land Trust", desc:"Farmland & open space preservation"}]
+    },
+    minebank: {
+      history: "Minebank Run is a small urban headwater stream that joins the Gunpowder just south of Loch Raven Reservoir. By the 1990s, decades of stormwater runoff from the surrounding Towson suburbs had badly eroded its channel; an earlier 1960s attempt to stabilize it with concrete flumes had actually made the erosion worse.",
+      conservation: "Baltimore County commissioned a natural channel redesign in 1998, and crews rebuilt roughly two miles of the stream through Cromwell Valley Park in phases completed by 2005 \u2014 reconnecting the channel to its floodplain and restoring a natural mix of riffles, runs, and pools. It's since become one of the most closely studied urban stream restorations in the country, with USGS and EPA researchers monitoring its effects on water quality for years afterward.",
+      orgs: [{name:"Baltimore County Dept. of Environmental Protection & Sustainability", desc:"Stream restoration & stormwater management"}]
+    },
+    patapsco: {
+      history: "The Patapsco River valley was one of Maryland's earliest industrial corridors, its mill towns turning out flour, iron, and cotton through the 1700s and 1800s \u2014 including the Orange Grove Flour Mill, once the largest flour mill in the South. Patapsco Valley State Park, founded in 1907 from a 43-acre gift of land, was Maryland's first state park. Catastrophic floods, most notably Tropical Storm Agnes in 1972, repeatedly reshaped the valley and destroyed mill-era structures.",
+      conservation: "American Rivers, Maryland DNR, and the Friends of Patapsco Valley State Park spent more than a decade removing the river's aging dams \u2014 Simkins and Union in 2010, and finally Bloede Dam in 2018\u201319 \u2014 reopening more than 60 miles of habitat to migrating shad, herring, and eel for the first time in nearly a century. The Patapsco Heritage Greenway continues to lead cleanups and restoration work along the corridor today.",
+      orgs: [{name:"American Rivers", desc:"River restoration & dam removal advocacy"}, {name:"Patapsco Heritage Greenway", desc:"Trail stewardship & river cleanups"}, {name:"Friends of Patapsco Valley State Park", desc:"Park stewardship & volunteer support"}]
+    },
+    deer_creek: {
+      history: "Deer Creek is a state-designated Scenic River winding through Harford County before joining the Susquehanna below Conowingo Dam. The King and Queen Seat rock outcrop above the creek, believed to have been used by the Susquehannock for ceremonial gatherings, has drawn visitors since the 1800s, when the Maryland and Pennsylvania Railroad ran day-trippers out to picnic at the Rocks. The park \u2014 first called Deer Creek State Park \u2014 opened in 1953 and was later renamed Rocks State Park.",
+      conservation: "A private dam at Wilson's Mill once blocked roughly 25 miles of spawning habitat for river herring and shad; a Denil fish ladder built in 2000 reopened the run, and every historic species that once spawned in Deer Creek has since been documented passing through it. The creek is stocked with trout each spring and fall by Maryland DNR Fisheries.",
+      orgs: [{name:"Maryland DNR Fisheries Service", desc:"Fish stocking & habitat management"}]
+    },
+    seneca: {
+      history: "Seneca Creek was once one of Montgomery County's most heavily used mill streams \u2014 eight of the county's 44 pre-1800 mills sat along its banks or tributaries, including the Seneca gristmill, which began operating around 1780 near the creek's mouth on the Potomac. The nearby Seneca Quarry supplied the distinctive red sandstone used in the Smithsonian Castle and other Washington, D.C. landmarks. Seneca Creek State Park itself grew out of the Clopper family's 19th-century farm estate.",
+      conservation: "The creek falls under Montgomery County's watershed restoration program, which installs stormwater retrofits and stream repairs throughout the Seneca Creek watershed to protect water quality as the surrounding suburbs have grown.",
+      orgs: [{name:"Montgomery County Dept. of Environmental Protection", desc:"Watershed restoration program"}]
+    },
+    cabin_john: {
+      history: "Cabin John Creek runs about 10 miles from its headwaters in Rockville, through Cabin John Regional Park, and under the historic Cabin John Bridge before reaching the Potomac near Glen Echo. Its 25-square-mile watershed is now roughly 90 percent urbanized, and decades of stormwater runoff from Rockville, Bethesda, and Potomac have left the creek eroded and impaired.",
+      conservation: "Friends of Cabin John Creek, a volunteer group founded informally in 1999, leads stream monitoring, cleanups, and restoration advocacy throughout the watershed, tracking water quality at several sites for bacteria, chemicals, and aquatic insect life. Montgomery County has also restored several tributaries, including Booze Creek and Buck Branch, to reduce erosion and improve habitat.",
+      orgs: [{name:"Friends of Cabin John Creek", desc:"Stream monitoring & cleanups"}]
+    },
+    antietam: {
+      history: "Antietam Creek runs about 42 miles from southern Pennsylvania into the Potomac near Sharpsburg. On September 17, 1862, its banks became the site of the Battle of Antietam, the bloodiest single day in American military history, with more than 22,000 combined casualties. Burnside's Bridge, an 1836 stone arch crossing the creek, saw some of the fiercest fighting as Union General Ambrose Burnside's men forced a crossing.",
+      conservation: "The battlefield and creek corridor are preserved as Antietam National Battlefield, managed by the National Park Service, which maintains the Snavely Ford Trail along the creek and works to protect the surrounding stream valley's forest and wildlife habitat.",
+      orgs: [{name:"National Park Service \u2014 Antietam National Battlefield", desc:"Battlefield & stream corridor preservation"}]
+    },
+    fifteen_mile: {
+      history: "Fifteen Mile Creek runs about 20 miles through the mountains of Allegany County before reaching the Potomac near Little Orleans, inside Green Ridge State Forest. A stone aqueduct built starting in 1838 still carries the historic Chesapeake and Ohio Canal over the creek's mouth. Green Ridge itself was established as a state forest in 1931 under Maryland's first state forester, Fred Besley, with Civilian Conservation Corps crews doing much of the early trail and reforestation work during the Great Depression.",
+      conservation: "Roughly 92 percent of the Fifteen Mile Creek watershed remains forested, much of it protected as state land across Green Ridge State Forest in Maryland and Buchanan State Forest just over the Pennsylvania line, making it one of the most pristine tributaries left on the Potomac. Volunteer stream-monitoring groups track its water quality as part of broader Potomac watershed conservation efforts.",
+      orgs: [{name:"Green Ridge State Forest (MD DNR Forest Service)", desc:"State forest stewardship"}]
+    }
+  };
+  const HISTORY_KEY_BY_SPOT = {
+    'hereford-gunpowder': 'gunpowder', 'pot-rocks': 'gunpowder',
+    'little-gunpowder': 'little_gunpowder',
+    'long-green-pool': 'long_green',
+    'cromwell-valley': 'minebank',
+    'avalon-patapsco': 'patapsco', 'hollofield-patapsco': 'patapsco', 'sykesville-patapsco': 'patapsco',
+    'rocks-deercreek': 'deer_creek', 'kilgore-falls': 'deer_creek',
+    'seneca-creek': 'seneca',
+    'cabin-john': 'cabin_john',
+    'antietam-burnside': 'antietam',
+    'fifteen-mile': 'fifteen_mile'
+  };
+
+  const SPOTS = [
+    {
+      id: 'hereford-gunpowder', name: 'Hereford Area', waterway: 'Big Gunpowder Falls', county: 'Baltimore Co.', dist: 16.6, x: 61.1, y: 17.7, color:'#2F6F76', coverIcon:'fly_fish',
+      publicAccess: true, parking: 'Falls Rd pull-offs, several small lots', bottom: 'Rock, gravel', shade: 'Mostly shaded',
+      level: 'Normal', levelPct: 48, flow: 'Moderate', flowPct: 45, temp: 58,
+      great: ['fly_fish','wade','fish','cold_plunge','swim'], good: ['chill','hike','photo'], skip: ['tube'],
+      wqTested: false, desc: 'Cold tailwater below Prettyboy Dam — Maryland\u2019s best-known trout stretch. The dam release keeps it chilly even in August, which is exactly the appeal for full-immersion cold-water regulars. Not a lounge-and-splash spot; come ready to get all the way in.',
+      reports: []
+    },
+    {
+      id: 'pot-rocks', name: 'Pot Rocks', waterway: 'Big Gunpowder Falls', county: 'Baltimore Co.', dist: 16.6, x: 61.5, y: 17.5, color:'#2F6F76', coverIcon:'swim',
+      publicAccess: true, parking: 'Falls Rd pull-off, short walk in', bottom: 'Rock, mixed gravel', shade: 'Mostly shaded',
+      level: 'Moderate', levelPct: 55, flow: 'Gentle', flowPct: 35, temp: 64,
+      great: ['chill','swim','wade'], good: ['fish','hike'], skip: ['tube'],
+      wqTested: false, desc: 'Deep pockets between boulders make this a well-known local swimming spot on the Gunpowder. Gets busy on hot weekends.',
+      reports: []
+    },
+    {
+      id: 'little-gunpowder', name: 'Jerusalem Mill', waterway: 'Little Gunpowder Falls', county: 'Harford Co.', dist: 9.5, x: 66.1, y: 23.7, color:'#6B8F5C', coverIcon:'fish',
+      publicAccess: true, parking: 'Jerusalem Mill Village lot', bottom: 'Gravel, sand', shade: 'Full sun',
+      level: 'Low', levelPct: 24, flow: 'Barely moving', flowPct: 15, temp: 68,
+      great: ['wade','creek_walk','kids'], good: ['fish','chill','dog'], skip: ['swim','tube'],
+      wqTested: false, desc: 'Shallow riffles by the historic 1772 mill village. Easy, family-friendly access with plenty of gravel bars to wade.',
+      reports: []
+    },
+    {
+      id: 'long-green-pool', name: 'The Pool, Long Green Creek', waterway: 'Long Green Creek', county: 'Baltimore Co.', dist: 9.3, x: 65.0, y: 22.1, color:'#2F6F76', coverIcon:'swim',
+      publicAccess: true, parking: 'Roadside pull-off, unmarked', bottom: 'Rock, gravel', shade: 'Mostly shaded',
+      level: 'Normal', levelPct: 50, flow: 'Gentle', flowPct: 30, temp: 66,
+      great: ['swim','chill'], good: ['wade','kids'], skip: ['tube'],
+      wqTested: false, desc: 'An unofficial but well-loved swimming hole tucked into Gunpowder Falls State Park. No signage — locals just call it "the Pool."',
+      reports: []
+    },
+    {
+      id: 'cromwell-valley', name: 'Cromwell Valley Park', waterway: 'Minebank Run', county: 'Baltimore Co.', dist: 2.3, x: 63.9, y: 26.0, color:'#B5623A', coverIcon:'chill',
+      publicAccess: true, parking: 'Lot at park entrance', bottom: 'Sand, mud', shade: 'Some shade',
+      level: 'Low', levelPct: 20, flow: 'Barely moving', flowPct: 10, temp: 71,
+      great: ['chill','wade','kids'], good: ['dog','hike'], skip: ['swim','tube'],
+      wqTested: false, desc: 'Easy, close-to-home access in a working farm park. Six inches deep but cold and clean — good chair-in-the-creek water.',
+      reports: []
+    },
+    {
+      id: 'avalon-patapsco', name: 'Avalon / Orange Grove', waterway: 'Patapsco River', county: 'Baltimore Co.', dist: 14.0, x: 60.9, y: 33.9, color:'#2F6F76', coverIcon:'kayak',
+      publicAccess: true, parking: 'Avalon lot, 5120 South St, Halethorpe', bottom: 'Rock, sand', shade: 'Some shade',
+      level: 'Normal', levelPct: 52, flow: 'Moderate', flowPct: 48, temp: 73,
+      great: ['swim','tube','chill'], good: ['fish','kayak','hike','kids'], skip: ['fly_fish'],
+      wqTested: false, desc: 'The park\u2019s most popular water access — swimming is allowed river-wide unless posted otherwise. Historic swinging bridge nearby. No lifeguards; watch current after rain.',
+      reports: []
+    },
+    {
+      id: 'hollofield-patapsco', name: 'Hollofield Area', waterway: 'Patapsco River', county: 'Howard Co.', dist: 12.4, x: 59.6, y: 31.1, color:'#2F6F76', coverIcon:'camp',
+      publicAccess: true, parking: 'Campground / day-use lot off US-40', bottom: 'Rock, sand', shade: 'Full sun',
+      level: 'Normal', levelPct: 50, flow: 'Moderate', flowPct: 40, temp: 72,
+      great: ['swim','wade','kids'], good: ['fish','chill','dog'], skip: ['tube'],
+      wqTested: false, desc: 'Quieter than Avalon, with sandy stretches good for kids and easy river access off the Union Dam Trail.',
+      reports: []
+    },
+    {
+      id: 'sykesville-patapsco', name: 'Sykesville / Henryton', waterway: 'Patapsco River (South Branch)', county: 'Carroll Co.', dist: 19.5, x: 56.0, y: 28.0, color:'#B5623A', coverIcon:'swim',
+      publicAccess: true, parking: 'Street parking near River Rd', bottom: 'Rock, gravel', shade: 'Mostly shaded',
+      level: 'Moderate', levelPct: 45, flow: 'Gentle', flowPct: 30, temp: 70,
+      great: ['swim','chill'], good: ['fish','photo'], skip: ['kids'],
+      wqTested: false, desc: 'Unofficial but locally famous swimming holes with rope swings along the South Branch. Deeper and more current than the family spots — know it before you jump.',
+      reports: []
+    },
+    {
+      id: 'rocks-deercreek', name: 'Wilson & Hills Grove', waterway: 'Deer Creek', county: 'Harford Co.', dist: 21.0, x: 67.3, y: 16.4, color:'#6B8F5C', coverIcon:'tube',
+      publicAccess: true, parking: 'Rocks State Park lots at each picnic area', bottom: 'Rock, gravel', shade: 'Some shade',
+      level: 'Normal', levelPct: 50, flow: 'Gentle', flowPct: 32, temp: 67,
+      great: ['tube','wade','kids'], good: ['swim','fish','chill'], skip: ['kayak'],
+      wqTested: false, desc: 'Wide, clear, 2-3 ft deep on average — the classic Rocks State Park tubing run from Wilson down to Hills Grove.',
+      reports: []
+    },
+    {
+      id: 'kilgore-falls', name: 'Kilgore Falls, Falling Branch', waterway: 'Deer Creek tributary', county: 'Harford Co.', dist: 23.2, x: 67.2, y: 14.9, color:'#2F6F76', coverIcon:'photo',
+      publicAccess: true, parking: 'Falling Branch lot — free permit required weekends May\u2013Labor Day', bottom: 'Rock', shade: 'Mostly shaded',
+      level: 'Normal', levelPct: 45, flow: 'Gentle', flowPct: 25, temp: 62,
+      great: ['photo','wade','hike'], good: ['chill'], skip: ['swim','tube'],
+      wqTested: false, desc: 'Maryland\u2019s second-highest waterfall, dropping into a small pool. Short, steep half-mile hike in. Check current DNR rules — swimming is restricted here.',
+      reports: []
+    },
+    {
+      id: 'seneca-creek', name: 'Seneca Creek at Riley\u2019s Lock', waterway: 'Seneca Creek', county: 'Montgomery Co.', dist: 47.6, x: 46.8, y: 36.8, color:'#6B8F5C', coverIcon:'wade',
+      publicAccess: true, parking: 'Along Old River Rd, Poolesville — do not use store lot', bottom: 'Rock, sand', shade: 'Some shade',
+      level: 'Low', levelPct: 25, flow: 'Barely moving', flowPct: 15, temp: 70,
+      great: ['wade','chill'], good: ['kayak','fish'], skip: ['swim','tube'],
+      wqTested: false, desc: 'Waist-deep water under the bridge near the old farm store — an easy, low-key wading spot. Canoe/kayak launches nearby at Seneca Creek Landing.',
+      reports: []
+    },
+    {
+      id: 'cabin-john', name: 'Cabin John Local Park', waterway: 'Cabin John Creek', county: 'Montgomery Co.', dist: 41.9, x: 52.4, y: 44.1, color:'#B5623A', coverIcon:'dog',
+      publicAccess: true, parking: 'Lot at 7401 MacArthur Blvd', bottom: 'Rock, mud', shade: 'Mostly shaded',
+      level: 'Low', levelPct: 22, flow: 'Barely moving', flowPct: 12, temp: 71,
+      great: ['dog','wade','chill'], good: ['kids'], skip: ['swim','tube'],
+      wqTested: false, desc: 'A short, steep trail from the lot drops to two wide, waist-deep sections — a favorite for dogs cooling off on hot DC-summer days.',
+      reports: []
+    },
+    {
+      id: 'antietam-burnside', name: 'Burnside Bridge', waterway: 'Antietam Creek', county: 'Washington Co.', dist: 60.9, x: 40.7, y: 24.4, color:'#6B8F5C', coverIcon:'fly_fish',
+      publicAccess: true, parking: 'NPS lot at Antietam National Battlefield', bottom: 'Rock, gravel', shade: 'Full sun',
+      level: 'Normal', levelPct: 50, flow: 'Gentle', flowPct: 28, temp: 69,
+      great: ['fly_fish','fish','photo'], good: ['wade','chill','hike'], skip: ['swim','tube'],
+      wqTested: false, desc: 'Historic, quiet pool below the bridge on hallowed battlefield ground. A favorite for early-morning fly fishing.',
+      reports: []
+    },
+    {
+      id: 'fifteen-mile', name: 'Fifteen Mile Creek Aqueduct', waterway: 'Fifteen Mile Creek', county: 'Allegany Co.', dist: 95.4, x: 28.4, y: 16.8, color:'#2F6F76', coverIcon:'camp',
+      publicAccess: true, parking: 'Aqueduct lot, Green Ridge State Forest', bottom: 'Rock, gravel', shade: 'Mostly shaded',
+      level: 'Normal', levelPct: 46, flow: 'Gentle', flowPct: 28, temp: 65,
+      great: ['swim','chill','hike'], good: ['creek_walk','photo','camp'], skip: ['tube'],
+      wqTested: false, desc: 'Remote, quiet, and wooded — walk north from the aqueduct lot for secluded pools well off the beaten path. Worth the drive out to Green Ridge.',
+      reports: []
+    }
+  ];
+
+  let state = { view: 'map', selectedSpotId: null, detailSpotId: null, favorites: new Set(), filters: new Set(), mapZoom: 1, mapPanX: 0, mapPanY: 0, showAbout: false };
+  let dragInfo = null;
+  let wasDragging = false;
+
+  function clampPan(){
+    const maxPan = 140 * (state.mapZoom - 1);
+    state.mapPanX = Math.max(-maxPan, Math.min(maxPan, state.mapPanX));
+    state.mapPanY = Math.max(-maxPan, Math.min(maxPan, state.mapPanY));
+  }
+  function pinCounterScale(){
+    return Math.max(0.45, 1 / state.mapZoom);
+  }
+  function applyMapTransform(){
+    const canvas = document.getElementById('map-canvas');
+    if(canvas) canvas.style.transform = `translate(${state.mapPanX}px, ${state.mapPanY}px) scale(${state.mapZoom})`;
+    const zoomLabel = document.getElementById('zoom-level');
+    if(zoomLabel) zoomLabel.textContent = Math.round(state.mapZoom*100) + '%';
+    const scale = pinCounterScale();
+    document.querySelectorAll('.pin').forEach(p => { p.style.transform = `scale(${scale})`; });
+  }
+  function setZoom(z){
+    state.mapZoom = Math.max(1, Math.min(3.5, z));
+    if(state.mapZoom === 1){ state.mapPanX = 0; state.mapPanY = 0; }
+    clampPan();
+    applyMapTransform();
+  }
+
+  function distColor(id){ return SPOTS.find(s=>s.id===id).color; }
+
+  function goodForChips(spot, group){
+    return spot[group].map(a => {
+      const cls = a==='cold_plunge' ? 'cold' : (group==='good' ? 'also' : (group==='skip' ? 'skip' : ''));
+      return `<span class="chip ${cls}">${iconSvg(a,13)}${ACTIVITY_META[a] ? ACTIVITY_META[a].label : a}</span>`;
+    }).join('');
+  }
+
+  function pinSvg(color, selected){
+    const fill = selected ? '#CADD4C' : '#4FB8D4';
+    return `<svg viewBox="0 0 26 26"><path d="M13 0C6 0 1 5.2 1 11.5 1 19 13 26 13 26S25 19 25 11.5C25 5.2 20 0 13 0Z" fill="${fill}"/><circle cx="13" cy="11" r="4.5" fill="${selected ? '#123240' : '#0D2733'}"/></svg>`;
+  }
+
+  function renderMap(){
+    const s = state.selectedSpotId ? SPOTS.find(sp=>sp.id===state.selectedSpotId) : null;
+    return `
+      <div class="map-wrap" id="map-wrap">
+        <div class="map-canvas" id="map-canvas" style="transform: translate(${state.mapPanX}px, ${state.mapPanY}px) scale(${state.mapZoom});">
+          <div class="topo-lines"></div>
+          <svg class="md-outline" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <path d="M 75.228,84.260 L 74.794,84.260 L 74.252,84.260 L 75.228,84.260 Z M 6.217,14.000 L 79.352,14.000 L 81.196,64.030 L 94.000,64.466 L 90.094,81.214 L 87.055,81.867 L 81.630,84.260 L 77.398,86.000 L 77.507,79.475 L 75.879,76.864 L 78.158,74.036 L 75.120,67.510 L 74.143,70.339 L 70.020,69.686 L 68.609,62.508 L 69.911,62.508 L 70.020,53.154 L 71.322,49.456 L 69.585,36.840 L 71.756,29.444 L 75.120,28.139 L 75.663,20.525 L 73.167,21.396 L 73.058,25.311 L 67.850,30.314 L 66.330,34.882 L 66.005,46.411 L 64.052,51.849 L 64.920,60.985 L 67.524,67.293 L 67.199,72.079 L 68.826,76.864 L 67.958,80.127 L 63.401,73.819 L 56.890,70.773 L 54.937,64.683 L 51.248,68.163 L 49.837,63.378 L 52.767,57.287 L 54.503,50.979 L 57.107,46.846 L 54.611,42.930 L 52.984,45.324 L 50.380,41.626 L 46.256,39.668 L 46.256,33.794 L 44.086,30.532 L 41.048,29.879 L 38.769,18.786 L 35.406,18.786 L 32.042,15.088 L 30.197,18.133 L 26.942,17.915 L 26.183,22.266 L 20.323,19.438 L 16.417,25.311 L 13.813,24.006 L 9.906,30.749 L 6.000,34.447 L 6.217,14.000 Z" />
+          </svg>
+          <div class="you-are-here" style="left:63.2%; top:26.7%;"></div>
+          ${SPOTS.map(sp => `<div class="pin ${sp.id===state.selectedSpotId?'selected':''}" data-spot="${sp.id}" style="left:${sp.x}%; top:${sp.y}%; transform: scale(${pinCounterScale()});">${pinSvg(sp.color, sp.id===state.selectedSpotId)}</div>`).join('')}
+        </div>
+        <button class="map-search-btn" id="search-area-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Search this area
+        </button>
+        <div class="zoom-controls">
+          <button data-zoom="in" aria-label="Zoom in">+</button>
+          <div class="zoom-level" id="zoom-level">${Math.round(state.mapZoom*100)}%</div>
+          <button data-zoom="out" aria-label="Zoom out">−</button>
+        </div>
+      </div>
+      <div class="map-caption">Pinch, scroll, or use +/− to zoom · drag to pan</div>
+      ${s ? renderPreview(s) : `<div class="map-preview" style="text-align:center; color:var(--ink-light-soft); font-size:12.5px;">Tap a pin to preview a creek spot.</div>`}
+    `;
+  }
+
+  function renderPreview(s){
+    return `
+      <div class="map-preview">
+        <div class="mp-row">
+          <div style="min-width:0; flex:1;">
+            <div class="mp-title">${s.name}</div>
+            <div class="mp-sub">${s.waterway} · ${s.dist} mi away</div>
+          </div>
+          <button class="fav-heart ${state.favorites.has(s.id)?'on':''}" data-fav="${s.id}">${state.favorites.has(s.id)?'♥':'♡'}</button>
+        </div>
+        <div class="good-for-label great" style="margin-top:10px;">Best for</div>
+        <div class="chip-row">${goodForChips(s,'great')}</div>
+        <div class="good-for-label ok" style="margin-top:8px;">Also good for</div>
+        <div class="chip-row">${goodForChips(s,'good')}</div>
+        <div class="info-row" style="margin-top:8px;"><span class="label">Water level</span><span class="value">${s.level}</span></div>
+        <div class="info-row"><span class="label">Public access</span><span class="value">${s.publicAccess?'Yes':'No'}</span></div>
+        <div class="info-row"><span class="label">Parking</span><span class="value">${s.parking.split(',')[0]}</span></div>
+        <button class="view-spot-btn" data-viewspot="${s.id}">View Spot →</button>
+      </div>
+    `;
+  }
+
+  function filterBar(){
+    const opts = [
+      {k:'fly_fish', l:'Fly Fish'}, {k:'kids', l:'Kid Friendly'}, {k:'dog', l:'Dog Friendly'}, {k:'public', l:'Public Access Only'}
+    ];
+    return `<div class="filter-scroll">${opts.map(o=>`<button class="filter-pill ${state.filters.has(o.k)?'on':''}" data-filter="${o.k}">${o.l}</button>`).join('')}</div>`;
+  }
+
+  const ACTIVITY_ROW_ICONS = [
+    {k:'chill', l:'Chill'}, {k:'swim', l:'Swim'}, {k:'tube', l:'Tube'},
+    {k:'fish', l:'Fish'}, {k:'fly_fish', l:'Fly Fish'}, {k:'kayak', l:'Paddle'}, {k:'cold_plunge', l:'Plunge'}
+  ];
+  function activityChipsHtml(){
+    return `<div class="activity-row">${ACTIVITY_ROW_ICONS.map(o=>`<button class="activity-chip ${state.filters.has(o.k)?'on':''}" data-filter="${o.k}"><span class="ico">${iconSvg(o.k,20)}</span><span class="lbl">${o.l}</span></button>`).join('')}</div>`;
+  }
+
+  function passesFilters(s){
+    if(state.filters.size===0) return true;
+    for(const f of state.filters){
+      if(f==='public'){ if(!s.publicAccess) return false; continue; }
+      if(!s.great.includes(f) && !s.good.includes(f)) return false;
+    }
+    return true;
+  }
+
+  function spotCard(s){
+    return `
+      <div class="spot-card" data-viewspot="${s.id}">
+        <div class="spot-thumb">${iconSvg(s.coverIcon, 24)}</div>
+        <div class="spot-info">
+          <div class="spot-dist">${s.dist} mi away</div>
+          <div class="spot-name">${s.name}</div>
+          <div class="spot-best">Best today: ${s.great.map(a=>ACTIVITY_META[a]?ACTIVITY_META[a].label:a).join(' · ')}</div>
+        </div>
+        <button class="fav-heart ${state.favorites.has(s.id)?'on':''}" data-fav="${s.id}">${state.favorites.has(s.id)?'♥':'♡'}</button>
+      </div>
+    `;
+  }
+
+  function renderDiscover(){
+    const list = SPOTS.filter(passesFilters).sort((a,b)=>a.dist-b.dist);
+    return `
+      <div class="prototype-tag">
+        <span class="prototype-badge">Prototype / Demo</span>
+        <span class="prototype-note">Conditions shown are illustrative and not yet live.</span>
+      </div>
+      ${filterBar()}
+      <div class="section-eyebrow">Good creek spots today</div>
+      ${list.length? list.map(spotCard).join('') : `<div class="empty-fav">No spots match those filters yet. Try clearing a few.</div>`}
+    `;
+  }
+
+  function renderFavorites(){
+    const favs = SPOTS.filter(s=>state.favorites.has(s.id));
+    if(!favs.length) return `<div class="empty-fav">You haven't saved any creeks yet.<br><br>Tap the ♡ on any spot to add it to <b>My Creeks</b>.</div>`;
+    return `<div class="section-eyebrow">My Creeks</div>${favs.map(spotCard).join('')}`;
+  }
+
+  function renderAdd(){
+    return `
+      <div class="protect-callout">
+        <div class="protect-callout-title">
+          ${iconSvg('trail', 16)}
+          Help protect the places you share
+        </div>
+        <p class="protect-callout-text">Submitted spots are reviewed for public access, private property, sensitive habitat, safety concerns, and locations that may be better kept low-key.</p>
+      </div>
+      <div class="card-block">
+        <h3>Drop a new spot</h3>
+        <div style="display:flex; flex-direction:column; gap:8px; margin-top:4px;">
+          <input placeholder="Spot name (if it has one)" style="padding:9px; border-radius:8px; border:1px solid var(--line-light); font-size:13px; background:#F4F7F6;">
+          <input placeholder="Which waterway?" style="padding:9px; border-radius:8px; border:1px solid var(--line-light); font-size:13px; background:#F4F7F6;">
+          <button style="padding:9px; border-radius:8px; border:1px dashed var(--line-light); font-size:12.5px; background:#F4F7F6; color:var(--ink-soft); display:flex; align-items:center; justify-content:center; gap:6px;"><span style="width:14px; height:14px; display:inline-flex;">${pinSvg('#2CA9C9', false)}</span>Drop pin at current location</button>
+          <button class="add-report-btn" style="margin-top:4px;">Submit for review</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function gaugePct(v){ return Math.max(4, Math.min(100, v)); }
+
+  function renderHistoryBlock(s){
+    const key = HISTORY_KEY_BY_SPOT[s.id];
+    const info = WATERWAY_INFO[key];
+    if(!info) return '';
+    return `
+      <div class="card-block">
+        <h3>History</h3>
+        <p class="history-text">${info.history}</p>
+      </div>
+      <div class="card-block">
+        <h3>Conservation & restoration</h3>
+        <p class="history-text">${info.conservation}</p>
+      </div>
+      <div class="card-block">
+        <h3>Protecting this waterway</h3>
+        ${info.orgs.map(o=>`
+          <div class="org-card">
+            <div class="org-card-icon">${iconSvg('water_access', 18)}</div>
+            <div>
+              <div class="org-card-name">${o.name}</div>
+              <div class="org-card-desc">${o.desc}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  function renderDetail(s){
+    return `
+      <button class="detail-back" data-back="1">← Back</button>
+      <div class="detail-hero" style="background:${s.color}22;">${iconSvg(s.coverIcon, 44)}</div>
+      <div class="mp-row">
+        <div style="min-width:0; flex:1;">
+          <div class="detail-name">${s.name}</div>
+          <div class="detail-water">on ${s.waterway} · ${s.dist} mi away</div>
+        </div>
+      </div>
+      <div class="detail-fav-row">
+        <button class="detail-btn ${state.favorites.has(s.id)?'on':''}" data-fav="${s.id}">${state.favorites.has(s.id)?'♥ Saved':'♡ Save Creek'}</button>
+        <button class="detail-btn">↑ Share</button>
+      </div>
+      <p style="font-size:13px; line-height:1.5; color:var(--ink-soft); margin-bottom:14px;">${s.desc}</p>
+
+      <div class="card-block">
+        <h3>What's it good for right now</h3>
+        <div class="good-for-group"><div class="good-for-label great">Great for</div><div class="chip-row">${goodForChips(s,'great')}</div></div>
+        <div class="good-for-group"><div class="good-for-label ok">Good for</div><div class="chip-row">${goodForChips(s,'good')}</div></div>
+        <div class="good-for-group"><div class="good-for-label skip">Not great right now</div><div class="chip-row">${goodForChips(s,'skip')}</div></div>
+      </div>
+
+      <div class="card-block">
+        <h3>Current conditions</h3>
+        <div class="gauge-row">
+          <div class="gauge-item"><div class="gauge-bar-bg"><div class="gauge-bar-fill" style="height:${gaugePct(s.levelPct)}%;"></div></div><div class="gauge-label">Level</div><div class="gauge-value">${s.level}</div></div>
+          <div class="gauge-item"><div class="gauge-bar-bg"><div class="gauge-bar-fill" style="height:${gaugePct(s.flowPct)}%; background:var(--moss);"></div></div><div class="gauge-label">Flow</div><div class="gauge-value">${s.flow}</div></div>
+          <div class="gauge-item"><div class="gauge-bar-bg"><div class="gauge-bar-fill" style="height:${gaugePct((s.temp-50)*2)}%; background:var(--clay);"></div></div><div class="gauge-label">Temp</div><div class="gauge-value">${s.temp}°F</div></div>
+        </div>
+        ${s.wqTested
+          ? `<div class="wq-good">✓ Recent water quality test: Good</div><div style="font-size:11px; color:var(--ink-soft); margin-top:2px;">Tested ${s.wqDate} · ${s.wqSource}</div>`
+          : `<div class="wq-note">No recent water-quality testing available. User reports below reflect appearance only, not tested safety.</div>`}
+      </div>
+
+      <div class="card-block">
+        <h3>Access & parking</h3>
+        <div class="info-row"><span class="label">Public access</span><span class="value">${s.publicAccess?'Yes':'No'}</span></div>
+        <div class="info-row"><span class="label">Parking</span><span class="value">${s.parking}</span></div>
+        <div class="info-row"><span class="label">Bottom</span><span class="value">${s.bottom}</span></div>
+        <div class="info-row"><span class="label">Shade</span><span class="value">${s.shade}</span></div>
+      </div>
+
+      ${renderHistoryBlock(s)}
+
+      <div class="card-block">
+        <h3>Community reports</h3>
+        ${s.reports.length ? s.reports.map(r=>`<div class="report-item"><div class="report-meta">${r.time}</div><div class="report-text">${r.text}</div></div>`).join('') : `<div style="font-size:12.5px; color:var(--ink-soft);">No reports yet — be the first.</div>`}
+        <button class="add-report-btn" style="margin-top:10px;" data-addreport="${s.id}">+ Add a report</button>
+      </div>
+    `;
+  }
+
+  function render(){
+    let html = '';
+    if(state.detailSpotId){
+      html = renderDetail(SPOTS.find(s=>s.id===state.detailSpotId));
+    } else if(state.view==='map'){ html = renderMap(); }
+    else if(state.view==='discover'){ html = renderDiscover(); }
+    else if(state.view==='favorites'){ html = renderFavorites(); }
+    else if(state.view==='add'){ html = renderAdd(); }
+    body.innerHTML = html;
+
+    const isMapMode = state.view==='map' && !state.detailSpotId;
+    body.classList.toggle('map-mode', isMapMode);
+
+    const activityBar = document.getElementById('activity-bar');
+    const showActivityRow = state.view==='discover' && !state.detailSpotId;
+    activityBar.innerHTML = showActivityRow ? activityChipsHtml() : '';
+
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.nav===state.view && !state.detailSpotId));
+  }
+
+  root.addEventListener('click', (e)=>{
+    const menuBtn = e.target.closest('.pm-menu-btn');
+    if(menuBtn){ state.showAbout = true; document.getElementById('about-overlay').classList.add('open'); return; }
+
+    const aboutClose = e.target.closest('#about-close');
+    const aboutOverlay = e.target.closest('#about-overlay');
+    if(aboutClose || (aboutOverlay && e.target === aboutOverlay)){ state.showAbout = false; document.getElementById('about-overlay').classList.remove('open'); return; }
+
+    const nav = e.target.closest('.nav-btn');
+    if(nav){ state.view = nav.dataset.nav; state.detailSpotId=null; render(); return; }
+
+    const zoomBtn = e.target.closest('[data-zoom]');
+    if(zoomBtn){
+      setZoom(state.mapZoom + (zoomBtn.dataset.zoom==='in' ? 0.5 : -0.5));
+      return;
+    }
+
+    if(wasDragging){ wasDragging = false; return; }
+
+    const pin = e.target.closest('.pin');
+    if(pin){ state.selectedSpotId = pin.dataset.spot; render(); return; }
+
+    const searchBtn = e.target.closest('#search-area-btn');
+    if(searchBtn){ searchBtn.textContent = '✓ Updated for this area'; setTimeout(()=>{ if(document.getElementById('search-area-btn')) document.getElementById('search-area-btn').textContent='⟳ Search this area'; }, 1400); return; }
+
+    const viewSpot = e.target.closest('[data-viewspot]');
+    if(viewSpot){ state.detailSpotId = viewSpot.dataset.viewspot; body.scrollTop = 0; render(); return; }
+
+    const back = e.target.closest('[data-back]');
+    if(back){ state.detailSpotId = null; render(); return; }
+
+    const fav = e.target.closest('[data-fav]');
+    if(fav){ const id=fav.dataset.fav; state.favorites.has(id)?state.favorites.delete(id):state.favorites.add(id); render(); return; }
+
+    const filt = e.target.closest('[data-filter]');
+    if(filt){ const k=filt.dataset.filter; state.filters.has(k)?state.filters.delete(k):state.filters.add(k); render(); return; }
+
+    const addReport = e.target.closest('[data-addreport]');
+    if(addReport){
+      const s = SPOTS.find(sp=>sp.id===addReport.dataset.addreport);
+      s.reports.unshift({time:'Just now', text:'Water looked clear today, easy access.'});
+      render();
+      return;
+    }
+  });
+
+  // Wheel zoom (desktop trackpad / mouse wheel) on the map
+  root.addEventListener('wheel', (e)=>{
+    if(!e.target.closest('#map-wrap')) return;
+    e.preventDefault();
+    setZoom(state.mapZoom - e.deltaY * 0.0025);
+  }, { passive:false });
+
+  // Drag-to-pan (mouse + touch via pointer events)
+  root.addEventListener('pointerdown', (e)=>{
+    const wrap = e.target.closest('#map-wrap');
+    if(!wrap || state.mapZoom <= 1) return;
+    dragInfo = { startX:e.clientX, startY:e.clientY, panX:state.mapPanX, panY:state.mapPanY, moved:false };
+    wrap.setPointerCapture(e.pointerId);
+  });
+  root.addEventListener('pointermove', (e)=>{
+    if(!dragInfo) return;
+    const dx = e.clientX - dragInfo.startX, dy = e.clientY - dragInfo.startY;
+    if(Math.abs(dx) > 3 || Math.abs(dy) > 3) dragInfo.moved = true;
+    state.mapPanX = dragInfo.panX + dx;
+    state.mapPanY = dragInfo.panY + dy;
+    clampPan();
+    applyMapTransform();
+  });
+  root.addEventListener('pointerup', ()=>{
+    if(dragInfo && dragInfo.moved) wasDragging = true;
+    dragInfo = null;
+  });
+  root.addEventListener('pointercancel', ()=>{ dragInfo = null; });
+
+  render();
+})();
+
+</script>
+</body>
+</html>
